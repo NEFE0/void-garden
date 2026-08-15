@@ -1152,6 +1152,19 @@ function hideMobileChrome() {
   } catch (e) {}
 }
 
+function fitPlayfield() {
+  if (!matchMedia || !matchMedia('(pointer: coarse)').matches) return;
+  const pf = document.querySelector('.playfield');
+  const w = window.innerWidth, h = window.innerHeight;
+  if (!pf || !w || !h) return;
+  let pw = w, ph = w * 9 / 16;
+  if (ph > h) { ph = h; pw = h * 16 / 9; }
+  pf.style.width = Math.floor(pw) + 'px';
+  pf.style.height = Math.floor(ph) + 'px';
+  pf.style.marginLeft = 'auto';
+  pf.style.marginRight = 'auto';
+}
+
 function resetProgress() {
   localStorage.removeItem('void-garden-best');
   localStorage.removeItem('void-garden-gold');
@@ -1229,3 +1242,8 @@ renderDaily();
 renderMusicBtn();
 renderShakeBtn();
 applyLang();
+if (window.addEventListener) {
+  window.addEventListener('resize', fitPlayfield);
+  window.addEventListener('orientationchange', fitPlayfield);
+}
+fitPlayfield();
