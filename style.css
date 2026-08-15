@@ -122,7 +122,7 @@ footer { font-size: 11px; }
   #tip { display: none; }
   #fullBtn { display: none; }
   .game-shell { padding: 0; }
-  .playfield { margin: 0; border: none; box-shadow: none; width: min(100%, calc(100dvh * 16 / 9)); }
+  .playfield { margin: 0 auto; border: none; box-shadow: none; width: min(100%, calc(100dvh * 16 / 9)); }
 }
 @media (max-width: 650px) {
   .game-shell { padding: 10px; }
