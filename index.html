@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#080a16" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>虚空花园 · Void Garden</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<main class="game-shell">
+  <header>
+    <div class="brand">虚空花园 <span>VOID GARDEN</span></div>
+    <div class="header-right">
+      <span id="tip" data-i18n="tip">WASD 移动 · 空格 冲刺 · E 绽放 · Q 护盾 · P 暂停 · Esc 返回</span>
+      <button id="fullBtn" class="ghost mini" title="全屏">⛶</button>
+    </div>
+  </header>
+
+  <section class="playfield">
+    <canvas id="game" width="960" height="540"></canvas>
+    <div id="hud">
+      <div>
+        <b id="level">LV. 1</b>
+        <div class="bar"><i id="xp"></i></div>
+        <small id="build">选择你的花灵</small>
+      </div>
+      <div class="right">
+        <b id="clock">00:00</b>
+        <small id="status">存活时间</small>
+        <small id="kills">净化 0</small>
+        <small id="wave">备战中</small>
+      </div>
+    </div>
+
+    <div id="bossWarn" class="hidden"></div>
+
+    <div id="start" class="overlay">
+      <p class="eyebrow">A TINY SURVIVAL ROGUELITE</p>
+      <h1 data-i18n="title">让花园吞没虚空</h1>
+      <p data-i18n="subtitle">选择一名花灵，在无尽暗潮中培育你的法术。</p>
+      <div id="diffBar" class="startActions">
+        <button id="diffEasy" class="ghost mini">简单</button>
+        <button id="diffNormal" class="ghost mini active">普通</button>
+        <button id="diffHard" class="ghost mini">困难</button>
+        <button id="diffEndless" class="ghost mini">无尽</button>
+      </div>
+      <button id="startBtn" data-i18n="chooseHero">选择花灵</button>
+      <div class="startActions">
+        <button id="dailyBtn" class="ghost">每日挑战</button>
+        <button id="achBtn" class="ghost" data-i18n="achievements">成就</button>
+        <button id="metaBtn" class="ghost" data-i18n="shop">商城</button>
+        <button id="settingsBtn" class="ghost" data-i18n="settings">设置</button>
+      </div>
+      <small data-i18n="hint">一局约 10 分钟 · 自动攻击</small>
+      <small id="startMeta">金币 0 · 最佳 0 秒</small>
+    </div>
+
+    <div id="heroSelect" class="overlay hidden">
+      <p class="eyebrow">CHOOSE YOUR BLOOM</p>
+      <h2 data-i18n="chooseHeroTitle">选择开局花灵</h2>
+      <div id="heroes" class="cards"></div>
+      <small id="heroDust" class="dustline">金币 0</small>
+    </div>
+
+    <div id="weaponSelect" class="overlay hidden">
+      <p class="eyebrow">CHOOSE YOUR WEAPON</p>
+      <h2 data-i18n="chooseWeaponTitle">选择初始法器</h2>
+      <div id="weapons" class="cards"></div>
+    </div>
+
+    <div id="levelUp" class="overlay hidden">
+      <p class="eyebrow">CHOOSE A BLOOM</p>
+      <h2 data-i18n="levelUpTitle">选择一株新芽</h2>
+      <div id="choices" class="cards"></div>
+      <small data-i18n="levelUpHint">不同技能可以叠加、组合</small>
+    </div>
+
+    <div id="meta" class="overlay list hidden">
+      <p class="eyebrow">GARDEN SHOP</p>
+      <h2 data-i18n="shop">商城</h2>
+      <p id="shopGold" class="dustline">金币 0</p>
+      <h3 data-i18n="equip">装备</h3>
+      <div id="equipList" class="cards column"></div>
+      <h3 data-i18n="skills">技能</h3>
+      <div id="skillList" class="cards column"></div>
+      <h3 data-i18n="items">道具</h3>
+      <div id="itemList" class="cards column"></div>
+      <button id="metaClose" class="ghost" data-i18n="back">返回</button>
+    </div>
+
+    <div id="achievements" class="overlay list hidden">
+      <p class="eyebrow">MILESTONES</p>
+      <h2 data-i18n="achievements">成就</h2>
+      <p id="achCount" class="dustline">已解锁 0 / 9</p>
+      <div id="achList" class="cards column"></div>
+      <button id="achClose" class="ghost" data-i18n="back">返回</button>
+    </div>
+
+    <div id="settings" class="overlay hidden">
+      <p class="eyebrow">SETTINGS</p>
+      <h2 data-i18n="settings">设置</h2>
+      <label class="setting"><span data-i18n="volume">音量</span><input id="vol" type="range" min="0" max="1" step="0.05" value="0.5" /></label>
+      <div class="startActions">
+        <button id="musicBtn" class="ghost">音乐：开</button>
+        <button id="shakeBtn" class="ghost">屏幕震动：开</button>
+      </div>
+      <div class="startActions">
+        <button id="langZh" class="ghost mini">中文</button>
+        <button id="langEn" class="ghost mini">EN</button>
+      </div>
+      <button id="resetBtn" class="ghost danger" data-i18n="reset">重置全部进度</button>
+      <button id="settingsClose" class="ghost" data-i18n="back">返回</button>
+    </div>
+
+    <div id="pause" class="overlay hidden">
+      <p class="eyebrow">THE GARDEN WAITS</p>
+      <h2 data-i18n="pauseTitle">花园正在静候</h2>
+      <div class="pauseActions">
+        <button id="resumeBtn" data-i18n="resume">继续</button>
+        <button id="restartBtn" class="ghost" data-i18n="restart">重玩</button>
+        <button id="pauseSettingsBtn" class="ghost" data-i18n="settings">设置</button>
+        <button id="quitBtn" class="ghost" data-i18n="home">返回主界面</button>
+      </div>
+      <small data-i18n="pauseHint">按 P 也可继续</small>
+    </div>
+
+    <div id="gameOver" class="overlay hidden">
+      <p class="eyebrow">THE GARDEN RESTS</p>
+      <h1 data-i18n="gameOverTitle">花园凋零</h1>
+      <p id="result"></p>
+      <div class="startActions">
+        <button id="retryBtn" data-i18n="retry">重玩本局</button>
+        <button id="againBtn" class="ghost" data-i18n="changeHero">换花灵</button>
+        <button id="homeBtn" class="ghost" data-i18n="backHome">返回花园</button>
+      </div>
+    </div>
+
+    <div id="touch">
+      <div id="stick"><i id="knob"></i></div>
+      <div id="touchActions">
+        <button id="burstBtn" class="touchBtn action" aria-label="绽放">绽</button>
+        <button id="dashBtn" class="touchBtn action" aria-label="冲刺">冲</button>
+        <button id="shieldBtn" class="touchBtn action" aria-label="护盾">盾</button>
+        <button id="pauseBtn" class="touchBtn util" aria-label="暂停">Ⅱ</button>
+        <button id="fullBtnTouch" class="touchBtn util" aria-label="全屏">⛶</button>
+      </div>
+    </div>
+  </section>
+
+  <footer><span>试玩版 v1.0</span><span data-i18n="goal">目标：活过 10 分钟</span></footer>
+</main>
+
+<div id="rotateHint" data-i18n="rotateHint">建议横屏游玩</div>
+<div id="toast" role="status"></div>
+
+<script src="game.js"></script>
+<script>
+  const stick = document.querySelector('#stick'), knob = document.querySelector('#knob');
+  function steer(e) {
+    if (!game) return;
+    const r = stick.getBoundingClientRect(),
+      dx = e.clientX - (r.left + r.width / 2),
+      dy = e.clientY - (r.top + r.height / 2),
+      n = Math.hypot(dx, dy) || 1,
+      m = Math.min(34, n);
+    game.touchX = dx / n * m / 34;
+    game.touchY = dy / n * m / 34;
+    knob.style.transform = `translate(${dx / n * m}px,${dy / n * m}px)`;
+  }
+  stick.addEventListener('pointerdown', e => { stick.setPointerCapture(e.pointerId); steer(e); });
+  stick.addEventListener('pointermove', e => { if (e.buttons) steer(e); });
+  stick.addEventListener('pointerup', () => { if (game) { game.touchX = 0; game.touchY = 0; } knob.style.transform = ''; });
+</script>
+</body>
+</html>
